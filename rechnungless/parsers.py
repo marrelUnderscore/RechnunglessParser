@@ -1,8 +1,12 @@
+import base64
+
 import httpx
 
 from documents.parsers import DocumentParser
+from documents.parsers import ParseError
 import os
 from pathlib import Path
+import json
 
 
 
@@ -19,11 +23,28 @@ class RechnunglessParser(DocumentParser):
         with open(document_path, 'r') as content_file:
             content = content_file.read()
 
-        url="http://rechnungless:8080/rechnungless/convert/pdf"
+        url=os.getenv("RECHNUNGLESS_ENDPOINT", "http://rechnungless:8080") + "/rechnungless/convert/pdf2"
         header = {"Content-Type": "application/xml"}
         r = httpx.post(url, headers=header, data=content, timeout=60.0)
+        if r.status_code != httpx.codes.OK:
+            raise ParseError("Error while converting: HTTP" + r.status_code + " " + r.content)
+        response = json.loads(r.content)
+
+        if response["result"] == "failed":
+            message = "Failed to convert the invoice: \n"
+            for msg in response["messages"]:
+                message += msg
+            raise ParseError(message)
+
+        if response["result"] == "invalid" and os.getenv("RECHNUNGLESS_IGNORE_INVALID", "False").lower() != "true":
+            message = "The invoice was determined to be invalid: \n"
+            for msg in response["messages"]:
+                message += msg
+            raise ParseError(message)
+
+
         with open(archive_file, 'wb') as afile:
-            afile.write(r.content)
+            afile.write(base64.b64decode(response["archive_pdf"]))
 
         self.text = content
 
