@@ -14,7 +14,8 @@ services:
       - rechnungless
     volumes:
       [...]
-      - /path/to/your/rechnungless:/usr/src/paperless/src/rechnungless #  Replace with the path to the rechnungless folder, found in this repo
+        # Replace with the path to the rechnungless folder found in this repo
+      - /path/to/your/rechnungless:/usr/src/paperless/src/rechnungless
     environment:
       [...]
       PAPERLESS_APPS: rechnungless.apps.RechnunglessConfig
