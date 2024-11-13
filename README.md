@@ -7,7 +7,7 @@ This project is intended to be used with a docker based installation of paperles
 ```yaml
 services:
   [...]
-  webserver:
+  webserver: # This is your main paperless-ngx container
     [...]
     depends_on:
       [...]
