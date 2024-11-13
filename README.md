@@ -14,7 +14,7 @@ services:
       - rechnungless
     volumes:
       [...]
-        # Replace with the path to the rechnungless folder found in this repo
+        # Replace the part before the colon with the path to the rechnungless folder found in this repo
       - /path/to/your/rechnungless:/usr/src/paperless/src/rechnungless
     environment:
       [...]
