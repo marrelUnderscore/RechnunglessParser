@@ -48,6 +48,6 @@ Place these in the "environment"-section of your main paperless container ("webs
 ### RechnunglessConverter
 Place these in the "environment"-section of your rechnungless container
 
-| ENV-Variable                  | Description                                                                                             | Default |
-|-------------------------------|---------------------------------------------------------------------------------------------------------|---------|
-| RECHNUNGLESS_PARSEINVALIDXMLS | Determines if the converter should try to generate a PDF, even if the XML was determined to be invalid | false   |
+| ENV-Variable                  | Description                                                                                                               | Default |
+|-------------------------------|---------------------------------------------------------------------------------------------------------------------------|---------|
+| RECHNUNGLESS_PARSEINVALIDXMLS | Determines if the converter should try to generate a PDF, even if the XML was determined to be invalid (not recommended!) | false   |
