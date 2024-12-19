@@ -69,7 +69,6 @@ class RechnunglessParser(DocumentParser):
 
         #Check if RechnunglessConverter could find an issue date in the XML and set it
         if "issue_date" in response:
-            print("issue_date " + response["issue_date"])
             self.date = datetime.strptime(response["issue_date"], "%Y%m%d")
             if is_naive(self.date):
                 self.date = make_aware(self.date)
