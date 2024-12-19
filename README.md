@@ -1,7 +1,7 @@
 # RechnunglessParser
 A custom parser for paperless to visualize XML type eInvoices (Factura-X and xRechung) as PDFs.  
 **! Still Work-In-Progress. USE AT YOUR OWN RISK !**  
-This uses a custom java web service based on the library created by https://www.mustangproject.org/ to visualize the eInvoice as a pdf.
+This uses a [custom java web service](https://github.com/marrelUnderscore/RechnunglessConverter) based on the library created by https://www.mustangproject.org/ to visualize the eInvoice as a pdf.
 ## Current Features
  - [x] Process XML files as electronic bills and visualize them as PDFs
  - [x] Reject XML files that do not pass validation (malformed eInvoice, not xRechung/Factura-X format, ...)
