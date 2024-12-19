@@ -35,18 +35,18 @@ services:
 ```
 After that, restart your paperless stack. If everything went right, paperless should now accept xml files and process them.
 ## Configuration
-There are different configuration options for both the RechunglessParser and the RechnunglessConverter
+There are different configuration options for both the RechnunglessParser and the RechnunglessConverter
 ### RechnunglessParser
 Place these in the "environment"-section of your main paperless container ("webserver" in the example above)
 
-| ENV-Variable            | Description                                                              | Default               |
-|-------------------------|--------------------------------------------------------------------------|-----------------------|
-| RECHNUNGLESS_ENDPOINT   | The domain and port of your PaperlessConverter service                   | http://paperless:8080 |
-| RECHNUNGLESS_RESSOURCE  | The name under which your tomcat artifact can be reached                 | rechnungless          |
-| RECHNUNGLESS_TIMEOUT    | The maximum time the parser should wait for an answer from the converter | 60.0                  |
+| ENV-Variable            | Description                                                              | Default                 |
+|-------------------------|--------------------------------------------------------------------------|-------------------------|
+| RECHNUNGLESS_ENDPOINT   | The domain and port of your PaperlessConverter service                   | http://rechungless:8080 |
+| RECHNUNGLESS_RESSOURCE  | The name under which your tomcat artifact can be reached                 | rechnungless            |
+| RECHNUNGLESS_TIMEOUT    | The maximum time the parser should wait for an answer from the converter | 60.0                    |
 
 ### RechnunglessConverter
-Place these in the "environment"-section of your rechungless container
+Place these in the "environment"-section of your rechnungless container
 
 | ENV-Variable                 | Description                                                                                             | Default |
 |------------------------------|---------------------------------------------------------------------------------------------------------|---------|
