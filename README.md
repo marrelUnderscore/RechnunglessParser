@@ -1,10 +1,10 @@
 # RechnunglessParser
-A custom parser for paperless to visualize XML type eInvoices (Factura-X and xRechung) as PDFs.  
+A custom parser for paperless to visualize XML type eInvoices (Factura-X and xRechnung) as PDFs.  
 **! Still Work-In-Progress. USE AT YOUR OWN RISK !**  
 This uses a [custom java web service](https://github.com/marrelUnderscore/RechnunglessConverter) based on the library created by https://www.mustangproject.org/ to visualize the eInvoice as a pdf.
 ## Current Features
  - [x] Process XML files as electronic bills and visualize them as PDFs
- - [x] Reject XML files that do not pass validation (malformed eInvoice, not xRechung/Factura-X format, ...)
+ - [x] Reject XML files that do not pass validation (malformed eInvoice, not xRechnung/Factura-X format, ...)
  - [x] Recognize the issue date from the XML and use it in paperless
  - [ ] Extract additional metadata from the XML and save that to paperless as metadata
  - [ ] eInvoices can have a bunch of attachments of various formats - maybe append these to the end of the pdf - currently they are simply ignored
@@ -48,6 +48,6 @@ Place these in the "environment"-section of your main paperless container ("webs
 ### RechnunglessConverter
 Place these in the "environment"-section of your rechnungless container
 
-| ENV-Variable                 | Description                                                                                             | Default |
-|------------------------------|---------------------------------------------------------------------------------------------------------|---------|
-| RECHUNGLESS_PARSEINVALIDXMLS | Determines if the converter should try to generate a PDF, even if the XML was determined to be invalid | false   |
+| ENV-Variable                  | Description                                                                                             | Default |
+|-------------------------------|---------------------------------------------------------------------------------------------------------|---------|
+| RECHNUNGLESS_PARSEINVALIDXMLS | Determines if the converter should try to generate a PDF, even if the XML was determined to be invalid | false   |
