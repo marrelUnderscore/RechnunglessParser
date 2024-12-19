@@ -1,61 +1,89 @@
+import os
+import json
+import base64
+
 import httpx
+from pathlib import Path
+from datetime import datetime
 
 from documents.parsers import DocumentParser
-import os
-from pathlib import Path
+from documents.parsers import ParseError
+from documents.parsers import make_thumbnail_from_pdf
+from django.utils.timezone import is_naive
+from django.utils.timezone import make_aware
 
 
 
 class RechnunglessParser(DocumentParser):
 
     def parse(self, document_path, mime_type, file_name=None):
-        # This method does not return anything. Rather, you should assign
-        # whatever you got from the document to the following fields:
 
-        # The content of the document.
+        #The target PDF document
         archive_file = os.path.join(self.tempdir, "archived.pdf")
 
+        #Read XML
+        content = self.read_file_handle_unicode_errors(document_path)
 
-        with open(document_path, 'r') as content_file:
-            content = content_file.read()
-
-        url="http://rechnungless:8080/rechnungless/convert/pdf"
+        #Make the request to RechunglessConverter
+        url=os.getenv("RECHNUNGLESS_ENDPOINT", "http://rechnungless:8080") + "/" + os.getenv("RECHNUNGLESS_RESSOURCE", "rechnungless") + "/convert"
         header = {"Content-Type": "application/xml"}
-        r = httpx.post(url, headers=header, data=content, timeout=60.0)
-        with open(archive_file, 'wb') as afile:
-            afile.write(r.content)
+        r = httpx.post(url, headers=header, data=content, timeout=os.getenv("RECHNUNGLESS_TIMEOUT", 60.0))
 
+        #HTTP 500 / Server Error -> Something went REALLY wrong
+        if r.status_code == httpx.codes.INTERNAL_SERVER_ERROR:
+            raise ParseError("Server Error: " + str(r.content))
+
+        #Other Error (apart from HTTP 422)
+        if r.status_code not in (httpx.codes.OK, httpx.codes.UNPROCESSABLE_ENTITY) :
+            raise ParseError("Unknown Error: HTTP" + str(r.status_code) + " " + str(r.content))
+
+        #Only HTTP 200 and HTTP 422 left -> ok to parse json
+        response = json.loads(r.content)
+
+        #SHOULD NOT BE THE CASE HERE, just checking for sanity (should only occur on HTTP 500)
+        if response["result"] == "failed":
+            message = "Conversion failed: \n"
+            for msg in response["messages"]:
+                message += msg
+            raise ParseError(message)
+
+        if r.status_code == httpx.codes.UNPROCESSABLE_ENTITY:
+            message = "The XML file is not valid:"
+            for msg in response["messages"]:
+                message += "\n" + msg
+            raise ParseError(message)
+
+        #HTTP 200 -> we should have gotten back a pdf as part of the response
+        #Print to the Console if we just accepted a technically invalid file
+        if response["result"] == "invalid":
+            print("THE FILE THAT WAS JUST PROCESSED WAS TECHNICALLY INVALID!")
+        #Write the file to disk
+        with open(archive_file, 'wb') as afile:
+            afile.write(base64.b64decode(response["archive_pdf"]))
+
+        #Just use the plain XML text as the content
         self.text = content
 
-        # Optional: path to a PDF document that you created from the original.
+        #Set the archive_path variable for paperless to be able ti find our file
         self.archive_path = archive_file
 
-        # Optional: "created" date of the document.
-        #self.date = get_created_from_metadata(document_path)
+        #Check if RechnunglessConverter could find an issue date in the XML and set it
+        if "issue_date" in response:
+            print("issue_date " + response["issue_date"])
+            self.date = datetime.strptime(response["issue_date"], "%Y%m%d")
+            if is_naive(self.date):
+                self.date = make_aware(self.date)
+
+
+
+    def extract_metadata(self, document_path, mime_type):
+        #TODO
+        return []
 
     def get_thumbnail(self, document_path: Path, mime_type, file_name=None) -> Path:
-
-        # This should return the path to a thumbnail you created for this
-        # document.
-
-        thumb_file = os.path.join(self.tempdir, "archived.jpg")
-
-        with open(document_path, 'r') as content_file:
-            content = content_file.read()
-
-        url = "http://rechnungless:8080/rechnungless/convert/thumbnail"
-        header = {"Content-Type": "application/xml"}
-        r = httpx.post(url, headers=header, data=content,timeout=60.0)
-        with open(thumb_file, 'wb') as afile:
-            afile.write(r.content)
-
-
-
-        return thumb_file
-
+        #Simply create the preview image from the just created PDF
+        return make_thumbnail_from_pdf(self.archive_path, self.tempdir)
 
     def get_settings(self):
-        """
-        This parser does not implement additional settings yet
-        """
+        #No Settings available
         return None
