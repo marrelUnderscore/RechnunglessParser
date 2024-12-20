@@ -48,6 +48,6 @@ Place these in the "environment"-section of your main paperless container ("webs
 ### RechnunglessConverter
 Place these in the "environment"-section of your rechnungless container
 
-| ENV-Variable                  | Description                                                                                                               | Default |
-|-------------------------------|---------------------------------------------------------------------------------------------------------------------------|---------|
-| RECHNUNGLESS_PARSEINVALIDXMLS | Determines if the converter should try to generate a PDF, even if the XML was determined to be invalid (not recommended!) | false   |
+| ENV-Variable                  | Description                                                                                                                                                                                                      | Default |
+|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| RECHNUNGLESS_PARSEINVALIDXMLS | Determines if the converter should try to generate a PDF, even if the XML was determined to be invalid (not recommended, since this will try to visualize *every* XML you ingest, even if it isn't an eInvoice!) | false   |
