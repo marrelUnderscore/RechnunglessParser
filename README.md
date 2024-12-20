@@ -44,6 +44,7 @@ Place these in the "environment"-section of your main paperless container ("webs
 | RECHNUNGLESS_ENDPOINT   | The domain and port of your PaperlessConverter service                   | http://rechnungless:8080 |
 | RECHNUNGLESS_RESSOURCE  | The name under which your tomcat artifact can be reached                 | rechnungless             |
 | RECHNUNGLESS_TIMEOUT    | The maximum time the parser should wait for an answer from the converter | 60.0                     |
+Hint: The URLs that are used by RechnunglessParser are generated in the following way: \$(RECHNUNGLESS_ENDPOINT)/$(RECHNUNGLESS_RESSOURCE)/\<convert or metadata>
 
 ### RechnunglessConverter
 Place these in the "environment"-section of your rechnungless container
