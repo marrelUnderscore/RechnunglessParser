@@ -35,7 +35,7 @@ class RechnunglessParser(DocumentParser):
 
         #Other Error (apart from HTTP 422)
         if r.status_code not in (httpx.codes.OK, httpx.codes.UNPROCESSABLE_ENTITY) :
-            raise ParseError("Unknown Error: HTTP" + str(r.status_code) + " " + str(r.content))
+            raise ParseError("Unknown Error: HTTP " + str(r.status_code) + " " + str(r.content))
 
         #Only HTTP 200 and HTTP 422 left -> ok to parse json
         response = json.loads(r.content)
@@ -64,11 +64,11 @@ class RechnunglessParser(DocumentParser):
         #Just use the plain XML text as the content
         self.text = content
 
-        #Set the archive_path variable for paperless to be able ti find our file
+        #Set the archive_path variable for paperless to be able to find our file
         self.archive_path = archive_file
 
         #Check if RechnunglessConverter could find an issue date in the XML and set it
-        if "issue_date" in response:
+        if "issue_date" in response and type(response["issue_date"]) == str:
             self.date = datetime.strptime(response["issue_date"], "%Y%m%d")
             if is_naive(self.date):
                 self.date = make_aware(self.date)
