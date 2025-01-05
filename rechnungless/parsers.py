@@ -12,11 +12,20 @@ from documents.parsers import make_thumbnail_from_pdf
 from django.utils.timezone import is_naive
 from django.utils.timezone import make_aware
 
-
+VERSION = "0.1.0"
+VERSION_SPLIT = VERSION.split(".")
 
 class RechnunglessParser(DocumentParser):
 
     def parse(self, document_path, mime_type, file_name=None):
+
+        url = os.getenv("RECHNUNGLESS_ENDPOINT", "http://rechnungless:8080") + "/" + os.getenv("RECHNUNGLESS_RESSOURCE", "rechnungless") + "/version"
+        r = httpx.get(url, timeout=os.getenv("RECHNUNGLESS_TIMEOUT", 60.0))
+        if r.status_code != httpx.codes.OK:
+            raise ParseError("Server Error: " + str(r.content))
+        response = json.loads(r.content)
+        if VERSION_SPLIT[0] != response["major"] or VERSION_SPLIT[1] != response["minor"]:
+            raise ParseError(f"RechnunglessParser and RechnunglessConverter are on incompatible versions ({VERSION} vs {response['major']}.{response['minor']}.{response['patch']})")
 
         #The target PDF document
         archive_file = os.path.join(self.tempdir, "archived.pdf")
