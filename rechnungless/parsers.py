@@ -85,8 +85,46 @@ class RechnunglessParser(DocumentParser):
 
 
     def extract_metadata(self, document_path, mime_type):
-        #TODO
-        return []
+        # Read XML
+        content = self.read_file_handle_unicode_errors(document_path)
+
+        # Make the request to RechunglessConverter
+        url = os.getenv("RECHNUNGLESS_ENDPOINT", "http://rechnungless:8080") + "/" + os.getenv("RECHNUNGLESS_RESSOURCE", "rechnungless") + "/metadata"
+        header = {"Content-Type": "application/xml"}
+        r = httpx.post(url, headers=header, data=content, timeout=os.getenv("RECHNUNGLESS_TIMEOUT", 60.0))
+
+        # HTTP 500 / Server Error -> Something went REALLY wrong
+        if r.status_code == httpx.codes.INTERNAL_SERVER_ERROR:
+            raise ParseError("Server Error: " + str(r.content))
+
+        # Other Error (apart from HTTP 422)
+        if r.status_code not in (httpx.codes.OK, httpx.codes.UNPROCESSABLE_ENTITY):
+            raise ParseError("Unknown Error: HTTP " + str(r.status_code) + " " + str(r.content))
+
+        # Only HTTP 200 and HTTP 422 left -> ok to parse json
+        response = json.loads(r.content)
+
+        # SHOULD NOT BE THE CASE HERE, just checking for sanity (should only occur on HTTP 500)
+        if response["result"] == "failed":
+            message = "Parsing failed: \n"
+            for msg in response["messages"]:
+                message += msg
+            raise ParseError(message)
+
+        if r.status_code == httpx.codes.UNPROCESSABLE_ENTITY:
+            message = "The XML file is not valid:"
+            for msg in response["messages"]:
+                message += "\n" + msg
+            raise ParseError(message)
+
+        # HTTP 200 -> we should have gotten back the metadata as part of the response
+        # Print to the Console if we just accepted a technically invalid file
+        if response["result"] == "invalid":
+            print("THE FILE THAT WAS JUST PROCESSED WAS TECHNICALLY INVALID!")
+        # Write the file to disk
+
+
+        return response["metadata"]
 
     def get_thumbnail(self, document_path: Path, mime_type, file_name=None) -> Path:
         #Simply create the preview image from the just created PDF
