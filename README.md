@@ -34,6 +34,11 @@ services:
 #     ...optional config for the RechnunglessConverter...
 ```
 After that, restart your paperless stack. If everything went right, paperless should now accept xml files and process them.
+## Versioning
+Since this project consists of two parts, you have to make sure that the versions of RechnunglessParser and RechnunglessConverter that you are using are compatible.
+This is the case if both the major and minor version number is identical (version numbers use the schema [major].[minor].[patch]),
+so for example versions 0.2.3 and 0.2.11 would be compatible, while versions 1.2.3 and 1.3.3 would not.
+Currently, the parser ignores this and tries to use the service anyway, but I have the plan to add a version check in order tomake sure the versions are comaptible.
 ## Configuration
 There are different configuration options for both the RechnunglessParser and the RechnunglessConverter
 ### RechnunglessParser
