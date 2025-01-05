@@ -35,10 +35,10 @@ services:
 ```
 After that, restart your paperless stack. If everything went right, paperless should now accept xml files and process them.
 ## Versioning
-Since this project consists of two parts, you have to make sure that the versions of RechnunglessParser and RechnunglessConverter that you are using are compatible.
+Since this project consists of two parts, you have to make sure that the versions of RechnunglessParser and RechnunglessConverter that you are using are compatible with each other.
 This is the case if both the major and minor version number is identical (version numbers use the schema [major].[minor].[patch]),
 so for example versions 0.2.3 and 0.2.11 would be compatible, while versions 1.2.3 and 1.3.3 would not.
-Currently, the parser ignores this and tries to use the service anyway, but I have the plan to add a version check in order tomake sure the versions are comaptible.
+The parser checks for this and returns an error if the versions are determined to not be compatible.
 ## Configuration
 There are different configuration options for both the RechnunglessParser and the RechnunglessConverter
 ### RechnunglessParser
@@ -46,14 +46,14 @@ Place these in the "environment"-section of your main paperless container ("webs
 
 | ENV-Variable            | Description                                                              | Default                  |
 |-------------------------|--------------------------------------------------------------------------|--------------------------|
-| RECHNUNGLESS_ENDPOINT   | The domain and port of your PaperlessConverter service                   | http://rechnungless:8080 |
+| RECHNUNGLESS_ENDPOINT   | The domain and port of your RechnunglessConverter service                | http://rechnungless:8080 |
 | RECHNUNGLESS_RESSOURCE  | The name under which your tomcat artifact can be reached                 | rechnungless             |
 | RECHNUNGLESS_TIMEOUT    | The maximum time the parser should wait for an answer from the converter | 60.0                     |
-Hint: The URLs that are used by RechnunglessParser are generated in the following way: \$(RECHNUNGLESS_ENDPOINT)/$(RECHNUNGLESS_RESSOURCE)/\<convert or metadata>
+Hint: The URLs that are used by RechnunglessParser are generated in the following way: \$(RECHNUNGLESS_ENDPOINT)/$(RECHNUNGLESS_RESSOURCE)/\<function that does the magic>
 
 ### RechnunglessConverter
 Place these in the "environment"-section of your rechnungless container
 
-| ENV-Variable                  | Description                                                                                                                                                                                                      | Default |
-|-------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| RECHNUNGLESS_PARSEINVALIDXMLS | Determines if the converter should try to generate a PDF, even if the XML was determined to be invalid (not recommended, since this will try to visualize *every* XML you ingest, even if it isn't an eInvoice!) | false   |
+| ENV-Variable                  | Description                                                                                                                                                                                                     | Default |
+|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
+| RECHNUNGLESS_PARSEINVALIDXMLS | Determines if the converter should try to generate a PDF, even if the XML was determined to be invalid (not recommended, since this will try to visualize *every* XML you ingest, even if it isn't an invoice!) | false   |
