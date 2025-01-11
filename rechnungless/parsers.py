@@ -36,7 +36,7 @@ class RechnunglessParser(DocumentParser):
         #Make the request to RechunglessConverter
         url=os.getenv("RECHNUNGLESS_ENDPOINT", "http://rechnungless:8080") + "/" + os.getenv("RECHNUNGLESS_RESSOURCE", "rechnungless") + "/convert"
         header = {"Content-Type": "application/xml"}
-        r = httpx.post(url, headers=header, data=content, timeout=os.getenv("RECHNUNGLESS_TIMEOUT", 60.0))
+        r = httpx.post(url, headers=header, data=content, timeout=int(os.getenv("RECHNUNGLESS_TIMEOUT", 60)))
 
         #HTTP 500 / Server Error -> Something went REALLY wrong
         if r.status_code == httpx.codes.INTERNAL_SERVER_ERROR:
