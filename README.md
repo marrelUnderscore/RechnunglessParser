@@ -49,6 +49,6 @@ Place these in the "environment"-section of your main paperless container ("webs
 | RECHNUNGLESS_PARSEINVALIDXMLS | Determines if the program should try to generate a PDF, even if the XML was determined to be invalid (not recommended, since this will try to parse *every* XML you ingest as an invoice, even if it isn't one!)                                     | false                    |
 | RECHNUNGLESS_SKIPVERSIONCHECK | This parameter disables the version check that is done everytime before parsing an XML file to make sure your RechnunglessConverter is on a compatible version (not recommended, since incompatible versions might lead to incorrect results/errors) | false                    |
 
-Hint: The URLs that are used by RechnunglessParser are generated in the following way: \$(RECHNUNGLESS_ENDPOINT)/$(RECHNUNGLESS_RESSOURCE)/\<function that does the magic>
+Hint: The URLs that are used by RechnunglessParser are generated in the following way: `$(RECHNUNGLESS_ENDPOINT)/$(RECHNUNGLESS_RESSOURCE)/<function that does the magic>`
 
 
