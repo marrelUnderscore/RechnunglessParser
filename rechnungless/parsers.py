@@ -20,8 +20,8 @@ RECHNUNGLESS_RESSOURCE = os.getenv("RECHNUNGLESS_RESSOURCE", "rechnungless")
 
 RECHNUNGLESS_TIMEOUT = int(os.getenv("RECHNUNGLESS_TIMEOUT", 60))
 RECHNUNGLESS_BASEURL = RECHNUNGLESS_ENDPOINT + "/" + RECHNUNGLESS_RESSOURCE
-RECHNUNGLESS_SKIPVERSIONCHECK = os.getenv("RECHUNGLESS_SKIPVERSIONCHECK", "False").casefold() == "True".casefold()
-RECHNUNGLESS_PARSEINVALIDXMLS = os.getenv("RECHUNGLESS_PARSEINVALIDXMLS", "False").casefold() == "True".casefold()
+RECHNUNGLESS_SKIPVERSIONCHECK = os.getenv("RECHNUNGLESS_SKIPVERSIONCHECK", "False").casefold() == "True".casefold()
+RECHNUNGLESS_PARSEINVALIDXMLS = os.getenv("RECHNUNGLESS_PARSEINVALIDXMLS", "False").casefold() == "True".casefold()
 
 class RechnunglessParser(DocumentParser):
 
@@ -142,4 +142,4 @@ class RechnunglessParser(DocumentParser):
             raise ParseError(f"Server Error during version check (HTTP {r.status_code}): {str(r.content)}")
         response = json.loads(r.content)
         if VERSION_SPLIT[0] != response["major"] or VERSION_SPLIT[1] != response["minor"]:
-            raise ParseError(f"RechnunglessParser and RechnunglessConverter are on incompatible versions ({VERSION} vs {response['major']}.{response['minor']}.{response['patch']})")
+            raise ParseError(f"RechnunglessParser and RechnunglessConverter are on incompatible versions (Parser {VERSION} vs Converter {response['major']}.{response['minor']}.{response['patch']})")
