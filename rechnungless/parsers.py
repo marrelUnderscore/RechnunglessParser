@@ -99,7 +99,7 @@ class RechnunglessParser(DocumentParser):
         if httpresponse.status_code == httpx.codes.INTERNAL_SERVER_ERROR:
             raise ParseError(f"Server Error: {httpresponse.content}")
 
-        # Other Error (apart from HTTP 422)
+        # Other Error (apart from HTTP 422) - should not occur
         if httpresponse.status_code not in (httpx.codes.OK, httpx.codes.UNPROCESSABLE_ENTITY):
             raise ParseError(f"Unknown Error (HTTP {httpresponse.status_code}): {httpresponse.content}")
 
@@ -113,6 +113,14 @@ class RechnunglessParser(DocumentParser):
                 message += msg
             raise ParseError(message)
 
+        #The XML was not processable, either because it was not an invoice at all, or it was invalid with the parameter not set
+        if httpresponse.status_code == httpx.codes.UNPROCESSABLE_ENTITY:
+            message = "The XML file could not be processed:"
+            for msg in response["messages"]:
+                message += "\n" + msg
+            raise ParseError(message)
+
+        # SHOULD NOT BE THE CASE HERE, just checking for sanity (if the parameter is not set, the Converter should have returned HTTP422 for an invalid invoice, which is checked above)
         if response["result"] == "invalid" and not RECHNUNGLESS_PARSEINVALIDXMLS:
             message = "The XML file is not valid:"
             for msg in response["messages"]:
@@ -123,7 +131,7 @@ class RechnunglessParser(DocumentParser):
         if response["result"] == "invalid":
             print("THE FILE THAT WAS JUST PROCESSED WAS TECHNICALLY INVALID! This was ignored however, because the RECHNUNGLESS_PARSEINVALIDXMLS parameter is set.")
 
-        #We either have a valid invoice, or it was invalid, but the PARSEINVALIDXMLS-Parameter was set.
+        #We either have a valid invoice, or it was successfully parsed with the PARSEINVALIDXMLS-Parameter
         #In both cases we can return the json object for further processing.
         return response
 
