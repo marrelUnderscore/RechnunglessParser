@@ -16,7 +16,7 @@ VERSION = "0.1.0"
 VERSION_SPLIT = VERSION.split(".")
 
 RECHNUNGLESS_ENDPOINT = os.getenv("RECHNUNGLESS_ENDPOINT", "http://rechnungless:8080")
-RECHNUNGLESS_RESSOURCE = os.getenv("RECHNUNGLESS_ENDPOINT", "rechnungless")
+RECHNUNGLESS_RESSOURCE = os.getenv("RECHNUNGLESS_RESSOURCE", "rechnungless")
 
 RECHNUNGLESS_TIMEOUT = int(os.getenv("RECHNUNGLESS_TIMEOUT", 60))
 RECHNUNGLESS_BASEURL = RECHNUNGLESS_ENDPOINT + "/" + RECHNUNGLESS_RESSOURCE
@@ -95,7 +95,7 @@ class RechnunglessParser(DocumentParser):
 
 
     def _decode_check_response(self, httpresponse):
-        # HTTP 500 / Server Error -> Something went REALLY wrong #TODO Invalid File?
+        # HTTP 500 / Server Error -> Something went REALLY wrong
         if httpresponse.status_code == httpx.codes.INTERNAL_SERVER_ERROR:
             raise ParseError(f"Server Error: {httpresponse.content}")
 
@@ -110,21 +110,21 @@ class RechnunglessParser(DocumentParser):
         if response["result"] == "failed":
             message = "Parsing failed: \n"
             for msg in response["messages"]:
-                message += msg
+                message += "\n" + str(msg)
             raise ParseError(message)
 
         #The XML was not processable, either because it was not an invoice at all, or it was invalid with the parameter not set
         if httpresponse.status_code == httpx.codes.UNPROCESSABLE_ENTITY:
             message = "The XML file could not be processed:"
             for msg in response["messages"]:
-                message += "\n" + msg
+                message += "\n" + str(msg)
             raise ParseError(message)
 
         # SHOULD NOT BE THE CASE HERE, just checking for sanity (if the parameter is not set, the Converter should have returned HTTP422 for an invalid invoice, which is checked above)
         if response["result"] == "invalid" and not RECHNUNGLESS_PARSEINVALIDXMLS:
             message = "The XML file is not valid:"
             for msg in response["messages"]:
-                message += "\n" + msg
+                message += "\n" + str(msg)
             raise ParseError(message)
 
         # Print to the Console if we just accepted a technically invalid file
